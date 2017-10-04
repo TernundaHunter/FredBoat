@@ -77,8 +77,6 @@ public abstract class FredBoat {
 
     private static final Logger log = LoggerFactory.getLogger(FredBoat.class);
 
-    static final int SHARD_CREATION_SLEEP_INTERVAL = 5500;
-
     private static final List<FredBoat> shards = new CopyOnWriteArrayList<>();
     public static final long START_TIME = System.currentTimeMillis();
     public static final int UNKNOWN_SHUTDOWN_CODE = -991023;
@@ -245,15 +243,11 @@ public abstract class FredBoat {
     private static void initBotShards(EventListener listener) {
         for (int i = 0; i < Config.CONFIG.getNumShards(); i++) {
             try {
+                //NOTE: This will take a while since creating shards happens in a blocking fashion
                 shards.add(i, new FredBoatBot(i, listener));
             } catch (Exception e) {
                 log.error("Caught an exception while starting shard " + i + "!", e);
                 numShardsReady.getAndIncrement();
-            }
-            try {
-                Thread.sleep(SHARD_CREATION_SLEEP_INTERVAL);
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Got interrupted while setting up bot shards!", e);
             }
         }
 
@@ -480,18 +474,5 @@ public abstract class FredBoat {
 
     public static DatabaseManager getDbManager() {
         return dbManager;
-    }
-
-    private static volatile long lastCoinGivenOut = 0;
-
-    // if you get a coin, you are allowed to build a shard (= perform a login to discord)
-    public static synchronized boolean getShardCoin(int shardId) {
-        long now = System.currentTimeMillis();
-        if (now - lastCoinGivenOut >= SHARD_CREATION_SLEEP_INTERVAL) {
-            lastCoinGivenOut = now;
-            log.info("Coin for shard {}", shardId);
-            return true;
-        }
-        return false;
     }
 }

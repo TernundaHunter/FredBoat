@@ -30,6 +30,7 @@ import fredboat.audio.player.LavalinkManager;
 import fredboat.audio.player.PlayerRegistry;
 import fredboat.event.EventLogger;
 import fredboat.event.ShardWatchdogListener;
+import fredboat.util.ConnectQueue;
 import fredboat.util.TextUtils;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -38,7 +39,6 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class FredBoatBot extends FredBoat {
     private static final Logger log = LoggerFactory.getLogger(FredBoatBot.class);
     private final int shardId;
     private final EventListener listener;
-    private static final SessionReconnectQueue reconnectQueue = new SessionReconnectQueue();
+    private static final ConnectQueue connectQueue = new ConnectQueue();
 
     public FredBoatBot(int shardId) {
         this(shardId, null);
@@ -77,7 +77,7 @@ public class FredBoatBot extends FredBoat {
                         .setGame(Game.of(Config.CONFIG.getGame()))
                         .setBulkDeleteSplittingEnabled(true)
                         .setEnableShutdownHook(false)
-                        .setReconnectQueue(reconnectQueue);
+                        .setReconnectQueue(connectQueue);
 
                 if(listener != null) {
                     builder.addEventListener(listener);
@@ -99,10 +99,7 @@ public class FredBoatBot extends FredBoat {
                     builder.useSharding(shardId, Config.CONFIG.getNumShards());
                 }
                 try {
-                    while (!getShardCoin(shardId)) {
-                        //beg aggressively for a coin
-                        Thread.sleep(1000);
-                    }
+                    connectQueue.getCoin(shardId);
                     if (blocking.length > 0 && blocking[0]) {
                         newJda = builder.buildBlocking();
                     } else {
