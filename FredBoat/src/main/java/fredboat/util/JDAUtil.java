@@ -52,10 +52,11 @@ public class JDAUtil {
      * shards are unique since each guild can only be present in one shard.
      */
     @CheckReturnValue
-    public static long countAllGuilds(@Nonnull List<FredBoat> shards) {
-        return shards.stream()
+    public static int countAllGuilds(@Nonnull List<FredBoat> shards) {
+        long result = shards.stream()
                 .mapToLong(shard -> shard.getJda().getGuildCache().size())
                 .sum();
+        return Math.toIntExact(result); //the day where there are more than 2^32 guilds served by fredboat will be a glorious one. until then this is fine
     }
 
     /**
@@ -73,7 +74,7 @@ public class JDAUtil {
         } else {
             result = countAllUniqueUsersOld(shards, biggestUserCount);
         }
-        return new Long(result).intValue(); //the day where there are more than 2^32 fredboat users will be a glorious one. until then this is fine
+        return Math.toIntExact(result); //the day where there are more than 2^32 fredboat users will be a glorious one. until then this is fine
     }
 
     @CheckReturnValue

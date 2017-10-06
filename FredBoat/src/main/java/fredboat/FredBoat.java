@@ -343,12 +343,12 @@ public abstract class FredBoat {
         return JDAUtil.getAllGuilds(shards);
     }
 
-    public static long countAllGuilds() {
+    public static int countAllGuilds() {
         return JDAUtil.countAllGuilds(shards);
     }
 
     private static AtomicInteger biggestUserCountTotal = new AtomicInteger(-1); //of FredBoat total
-    public static long countAllUniqueUsers() {
+    public static int countAllUniqueUsers() {
         int result = JDAUtil.countAllUniqueUsers(shards, biggestUserCountTotal);
         //never shrink the user count (might happen due to not connected shards)
         biggestUserCountTotal.accumulateAndGet(result, Math::max);
