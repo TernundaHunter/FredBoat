@@ -77,7 +77,7 @@ public class SelectCommand extends Command implements IMusicCommand, ICommandRes
                 } else {
                     AudioTrack selected = selection.choices.get(i - 1);
                     VideoSelection.remove(invoker);
-                    TextChannel tc = FredBoat.getTextChannelById(Long.toString(selection.channelId));
+                    TextChannel tc = FredBoat.getTextChannelById(selection.channelId);
                     if (tc != null) {
                         String msg = context.i18nFormat("selectSuccess", i, selected.getInfo().title,
                                 TextUtils.formatTime(selected.getInfo().length));

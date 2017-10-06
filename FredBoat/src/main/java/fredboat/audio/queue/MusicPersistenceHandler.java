@@ -97,8 +97,8 @@ public class MusicPersistenceHandler {
                 }
 
                 JSONObject data = new JSONObject();
-                data.put("vc", player.getUserCurrentVoiceChannel(player.getGuild().getSelfMember()).getId());
-                data.put("tc", activeTextChannel != null ? activeTextChannel.getId() : "");
+                data.put("vc", player.getUserCurrentVoiceChannel(player.getGuild().getSelfMember()).getIdLong());
+                data.put("tc", activeTextChannel != null ? activeTextChannel.getIdLong() : "");
                 data.put("isPaused", player.isPaused());
                 data.put("volume", Float.toString(player.getVolume()));
                 data.put("repeatMode", player.getRepeatMode());
@@ -180,8 +180,8 @@ public class MusicPersistenceHandler {
                 //TODO: Make shard in-specific
                 boolean isPaused = data.getBoolean("isPaused");
                 final JSONArray sources = data.getJSONArray("sources");
-                VoiceChannel vc = FredBoat.getVoiceChannelById(data.getString("vc"));
-                TextChannel tc = FredBoat.getTextChannelById(data.getString("tc"));
+                VoiceChannel vc = FredBoat.getVoiceChannelById(data.getLong("vc"));
+                TextChannel tc = FredBoat.getTextChannelById(data.getLong("tc"));
                 float volume = Float.parseFloat(data.getString("volume"));
                 RepeatMode repeatMode = data.getEnum(RepeatMode.class, "repeatMode");
                 boolean shuffle = data.getBoolean("shuffle");
